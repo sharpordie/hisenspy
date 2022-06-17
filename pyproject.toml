@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "hisenspy"
+version = "0.1.0"
+description = ""
+authors = ["sharpordie <sharpordie@example.org>"]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+kivymd = "^0.104.2"
+plyer = "^2.0.0"
+
+[tool.poetry.dev-dependencies]
+pytest = "^5.2"
+black = {version = "^22.3.0", allow-prereleases = true}
+buildozer = "^1.3.0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
