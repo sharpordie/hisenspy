@@ -1,6 +1,9 @@
 .buildozer/
+bin/
+.cache/
 .idea/
 .venv/
+
 .vs/
 .vscode/
 bins/

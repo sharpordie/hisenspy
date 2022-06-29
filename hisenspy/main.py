@@ -1,27 +1,54 @@
-from kivy.uix.screenmanager import Screen
+from os.path import abspath, dirname, exists, join
 
+from adb_shell.adb_device import AdbDeviceTcp
+from adb_shell.auth.keygen import keygen
+from adb_shell.auth.sign_pythonrsa import PythonRSASigner
+from kivy.lang import Builder
 from kivymd.app import MDApp
-from kivymd.uix.button import MDRectangleFlatButton
-from plyer import irblaster
+
+KV = """
+MDScreen:
+    MDBoxLayout:
+        orientation: "vertical"
+        padding: [16, 16, 16, 16]
+        spacing: 16
+        TextInput:
+            id: txt_inpt
+            text: ""
+        MDBoxLayout:
+            orientation: "horizontal"
+            spacing: 16
+            MDRectangleFlatButton:
+                on_release: app.clear()
+                size_hint: 1.0, 1.0
+                text: "CLEAR"
+            MDRectangleFlatButton:
+                on_release: app.fetch()
+                size_hint: 1.0, 1.0
+                text: "FETCH"
+"""
 
 
 class MainApp(MDApp):
     def build(self):
         self.theme_cls.theme_style = "Dark"
-        screen = Screen()
-        screen.add_widget(
-            MDRectangleFlatButton(
-                text="MENU",
-                pos_hint={"center_x": 0.5, "center_y": 0.5},
-                on_release=self.do_it,
-            )
-        )
-        return screen
+        return Builder.load_string(KV)
 
-    def do_it(self, obj):
-        carrier = 37810
-        pattern = [8900, 4400, 600, 500, 550, 550, 550, 550, 550, 550, 550, 550, 550, 500, 600, 500, 600, 500, 550, 1650, 600, 1650, 550, 1650, 550, 1650, 550, 1650, 550, 1650, 600, 500, 600, 1650, 550, 500, 600, 500, 550, 1650, 600, 500, 550, 1700, 550, 500, 550, 550, 550, 550, 550, 1650, 550, 1700, 500, 550, 550, 1700, 500, 550, 550, 1700, 500, 1700, 500, 1700, 550]
-        irblaster.transmit(carrier, pattern)
+    def clear(self):
+        self.root.ids.txt_inpt.text = ""
+
+    def fetch(self):
+        keypair = join(dirname(abspath(__file__)), "adbkey")
+        if not exists(keypair):
+            keygen(keypair)
+        with open(keypair) as f:
+            priv = f.read()
+        with open(keypair + ".pub") as f:
+            pub = f.read()
+        machine = AdbDeviceTcp("192.168.1.62", 5555, default_transport_timeout_s=9.0)
+        machine.connect(rsa_keys=[PythonRSASigner(pub, priv)], auth_timeout_s=0.1)
+        content = machine.shell("getprop ro.product.model")
+        self.root.ids.txt_inpt.text = content
 
 
 MainApp().run()
