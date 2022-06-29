@@ -24,5 +24,4 @@ __pycache__/
 *.lock
 *.pyc
 *.pyo
-*.spec
 *.sqlite
