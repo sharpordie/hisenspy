@@ -37,7 +37,7 @@ version = 0.1
 
 # (list) Application requirements
 # comma separated e.g. requirements = sqlite3,kivy
-requirements = python3,kivy,adb-shell,kivymd
+requirements = kivy==2.1.0,kivymd==0.104.2,sdl2_ttf==2.0.15,pillow,adb-shell
 # requirements = python3==3.9.12,kivy,adb-shell,kivymd,hostpython3==3.9.12
 # requirements = python3==3.10.4,kivy,adb-shell,kivymd,hostpython3==3.10.4
 
